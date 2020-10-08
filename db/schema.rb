@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_08_170701) do
+ActiveRecord::Schema.define(version: 2020_10_08_171029) do
 
   create_table "bookings", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -26,6 +26,8 @@ ActiveRecord::Schema.define(version: 2020_10_08_170701) do
   create_table "items", force: :cascade do |t|
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "product_id"
+    t.index ["product_id"], name: "index_items_on_product_id"
   end
 
   create_table "products", force: :cascade do |t|
@@ -44,4 +46,5 @@ ActiveRecord::Schema.define(version: 2020_10_08_170701) do
 
   add_foreign_key "bookings", "items"
   add_foreign_key "bookings", "users"
+  add_foreign_key "items", "products"
 end
