@@ -1,5 +1,6 @@
 class Item < ApplicationRecord
   has_many :bookings
+  belongs_to :product
 
   def reserved?(from, till)
     from = DateTime.parse(from])
