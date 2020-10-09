@@ -3,7 +3,7 @@ class Item < ApplicationRecord
   belongs_to :product
 
   def reserved?(from, till)
-    from = DateTime.parse(from])
+    from = DateTime.parse(from)
     till = DateTime.parse(till)
     bookings.where("(rental_start <= ? AND rental_end > ?) OR (rental_start BETWEEN ? AND ?)", from, from, from, till).exists?
   end
