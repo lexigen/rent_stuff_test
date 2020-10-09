@@ -13,7 +13,7 @@ class Product < ApplicationRecord
       product.items.each do |item|
         reserved_items << item.id if item.reserved?(from, till)
       end
-      available_products << { product_id: product.id, total: product.quantity, available: (product.quantity - reserved_items.uniq.size) }
+      available_products << { product_id: product.id, available: (product.quantity - reserved_items.uniq.size), total: product.quantity }
     end
     available_products
   end
