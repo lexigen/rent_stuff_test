@@ -3,6 +3,6 @@ FactoryBot.define do
     sequence :name do |n|
       "product_#{n}"
     end
-    quantity { 5 }
+    quantity { 3 }
   end
 end
