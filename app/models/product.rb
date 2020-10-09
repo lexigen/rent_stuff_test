@@ -4,6 +4,8 @@ class Product < ApplicationRecord
   validates :quantity, numericality: { only_integer: true }
 
   def self.available(from, till)
+    from = DateTime.parse from
+    till = DateTime.parse till
     reserved_items = []
     available_products = {}
     products = Product.includes(items: :bookings)
