@@ -10,6 +10,7 @@ require 'rspec/rails'
 require 'factory_bot_rails'
 FactoryBot.definition_file_paths << File.expand_path('../spec/factories', __FILE__)
 require 'database_cleaner'
+require 'pry'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -68,4 +69,15 @@ RSpec.configure do |config|
 
   # spec/support/factory_bot.rb
   config.include FactoryBot::Syntax::Methods
+
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.around(:each) do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
+  end
 end
