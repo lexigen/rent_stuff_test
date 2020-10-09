@@ -6,14 +6,14 @@ class Product < ApplicationRecord
   def self.available(from, till)
     from = DateTime.parse from
     till = DateTime.parse till
-    reserved_items = []
-    available_products = {}
+    available_products = []
     products = Product.includes(items: :bookings)
     products.each do |product|
+      reserved_items = []
       product.items.each do |item|
         reserved_items << item.id if item.reserved?(from, till)
       end
-      available_products.merge!(product_id: product.id, total: product.quantity, available: (product.quantity - reserved_items.uniq.size))
+      available_products << { product_id: product.id, total: product.quantity, available: (product.quantity - reserved_items.uniq.size) }
     end
     available_products
   end
