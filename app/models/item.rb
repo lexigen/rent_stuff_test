@@ -5,6 +5,13 @@ class Item < ApplicationRecord
   validates :product, presence: true
 
   def reserved?(from, till)
-    bookings.where("(rental_start <= ? AND rental_end > ?) OR (rental_start BETWEEN ? AND ?)", from, from, from, till).exists?
+    bookings.each do |booking|
+      if (booking.rental_start <= from && booking.rental_end > from) ||
+         (booking.rental_start >= from && booking.rental_start <= till)
+        return true
+      end
+    end
+
+    false
   end
 end
