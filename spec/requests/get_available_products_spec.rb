@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "get available products count", type: :request do
+describe 'get available products count', type: :request do
   let(:from) { DateTime.parse('2020-10-01 09:00:00') }
   let(:till) { DateTime.parse('2020-10-07 17:00:00') }
 
@@ -16,7 +16,14 @@ describe "get available products count", type: :request do
   let(:item_2_3) { create(:item, product: second_product) }
 
   let(:user) { create(:user) }
-  let(:result) { [{"product_id"=>1000, "available"=>2, "total"=>3}, {"product_id"=>1001, "available"=>1, "total"=>3}] }
+
+  let(:result) do
+    { 'data' => [
+      { 'attributes' =>
+        { 'available' => 2, 'total' => 3 }, 'id' => '1000', 'type' => 'product' },
+      { 'attributes' => { 'available' => 1, 'total' => 3 }, 'id' => '1001', 'type' => 'product' }
+    ] }
+  end
 
   before do
     create(
@@ -61,7 +68,6 @@ describe "get available products count", type: :request do
 
     get "/available_items/#{from}/#{till}"
   end
-
 
   it 'returns status code 200' do
     expect(response).to have_http_status(:success)

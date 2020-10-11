@@ -1,6 +1,6 @@
 class ProductsController < ApplicationController
   def available
-    available_products = Product.available(params[:from], params[:till])
-    render json: available_products.as_json
+    products = Product.includes(items: :bookings)
+    render json: ProductSerializer.new(products, { params: { from: params[:from], till: params[:till] } })
   end
 end
