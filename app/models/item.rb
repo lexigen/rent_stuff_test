@@ -6,10 +6,7 @@ class Item < ApplicationRecord
 
   def reserved?(from, till)
     bookings.each do |booking|
-      if (booking.rental_start <= from && booking.rental_end > from) ||
-         (booking.rental_start >= from && booking.rental_start <= till)
-        return true
-      end
+      return true if (booking.rental_start <= till) && (from <= booking.rental_end)
     end
 
     false
