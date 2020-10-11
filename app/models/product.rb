@@ -4,9 +4,17 @@ class Product < ApplicationRecord
   validates :quantity, numericality: { only_integer: true }
 
   def available(params)
-    reserved_items = items.each.with_object([]) do |item, ary|
-      ary << item.id if item.reserved?(DateTime.parse(params[:from]), DateTime.parse(params[:till]))
-    end
-    quantity - reserved_items.uniq.size
+    from = DateTime.parse(params[:from])
+    till = DateTime.parse(params[:till])
+
+    quantity - reserved_items_count(from, till)
+  end
+
+  def reserved_items_count(from, till)
+    items.each.with_object([]) do |item, ary|
+      item.bookings.each do |booking|
+        ary << item.id if (booking.rental_start <= till) && (from <= booking.rental_end)
+      end
+    end.uniq.size
   end
 end
