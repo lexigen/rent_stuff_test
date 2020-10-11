@@ -3,6 +3,6 @@ FactoryBot.define do
     sequence :sku do |n|
       "sku_#{n}"
     end
-    product { build(:product) }
+    product
   end
 end
