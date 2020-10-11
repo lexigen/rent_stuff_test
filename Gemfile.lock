@@ -37,6 +37,10 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
+    active_attr (0.15.0)
+      actionpack (>= 3.0.2, < 6.1)
+      activemodel (>= 3.0.2, < 6.1)
+      activesupport (>= 3.0.2, < 6.1)
     activejob (6.0.3.3)
       activesupport (= 6.0.3.3)
       globalid (>= 0.3.6)
@@ -172,8 +176,11 @@ GEM
     sqlite3 (1.4.2)
     thor (1.0.1)
     thread_safe (0.3.6)
+    timeliness (0.4.4)
     tzinfo (1.2.7)
       thread_safe (~> 0.1)
+    validates_timeliness (5.0.0.beta2)
+      timeliness (>= 0.3.10, < 1)
     websocket-driver (0.7.3)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -183,6 +190,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  active_attr (~> 0.15.0)
   bootsnap (>= 1.4.2)
   byebug
   database_cleaner-active_record
@@ -197,6 +205,7 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.0.0)
   sqlite3 (~> 1.4)
   tzinfo-data
+  validates_timeliness (~> 5.0.0.beta1)
 
 RUBY VERSION
    ruby 2.6.6p146
