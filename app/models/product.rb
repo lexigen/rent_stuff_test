@@ -6,15 +6,16 @@ class Product < ApplicationRecord
   def self.available(from, till)
     from = DateTime.parse from
     till = DateTime.parse till
-    available_products = []
     products = Product.includes(items: :bookings)
-    products.each do |product|
-      reserved_items = []
-      product.items.each do |item|
-        reserved_items << item.id if item.reserved?(from, till)
+    products.each.with_object([]) do |product, available_products|
+      reserved_items = product.items.each.with_object([]) do |item, ary|
+        ary << item.id if item.reserved?(from, till)
       end
-      available_products << { product_id: product.id, available: (product.quantity - reserved_items.uniq.size), total: product.quantity }
+      available_products << {
+        product_id: product.id,
+        available: (product.quantity - reserved_items.uniq.size),
+        total: product.quantity
+      }
     end
-    available_products
   end
 end
