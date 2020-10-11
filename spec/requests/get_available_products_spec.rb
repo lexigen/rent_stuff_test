@@ -1,11 +1,13 @@
 require 'rails_helper'
 
-describe 'get available products count', type: :request do
+RSpec.describe 'get available products overview for given time interval', type: :request do
   let(:from) { DateTime.parse('2020-10-01 09:00:00') }
   let(:till) { DateTime.parse('2020-10-07 17:00:00') }
 
-  let(:first_product) { create(:product, id: 1000, name: 'first_product') }
-  let(:second_product) { create(:product, id: 1001, name: 'second_product') }
+  let(:user) { create(:user) }
+
+  let(:first_product) { create(:product, id: 1001) }
+  let(:second_product) { create(:product, id: 1002) }
 
   let(:item_1_1) { create(:item, product: first_product) }
   let(:item_1_2) { create(:item, product: first_product) }
@@ -15,54 +17,55 @@ describe 'get available products count', type: :request do
   let(:item_2_2) { create(:item, product: second_product) }
   let(:item_2_3) { create(:item, product: second_product) }
 
-  let(:user) { create(:user) }
-
   let(:result) do
     { 'data' => [
       { 'attributes' =>
-        { 'available' => 2, 'total' => 3 }, 'id' => '1000', 'type' => 'product' },
-      { 'attributes' => { 'available' => 1, 'total' => 3 }, 'id' => '1001', 'type' => 'product' }
+        { 'available' => 2, 'total' => 3 }, 'id' => '1001', 'type' => 'product' },
+      { 'attributes' => { 'available' => 1, 'total' => 3 }, 'id' => '1002', 'type' => 'product' }
     ] }
   end
 
   before do
+    # bookings beyond given interval, for first_product
     create(
       :booking,
       user: user,
-      rental_start: DateTime.parse('2020-09-01 09:00:00'),
-      rental_end: DateTime.parse('2020-09-07 19:00:00'),
+      rental_start: from - 1.month,
+      rental_end: till - 1.month,
       item: item_1_1
     )
 
     create(
       :booking,
       user: user,
-      rental_start: DateTime.parse('2020-09-20 09:00:00'),
-      rental_end: DateTime.parse('2020-09-24 19:00:00'),
+      rental_start: from + 10.days,
+      rental_end: till + 2.weeks,
       item: item_1_2
     )
 
+    # the only booking inside given interval, for first_product
     create(
       :booking,
       user: user,
-      rental_start: DateTime.parse('2020-09-29 09:00:00'),
-      rental_end: DateTime.parse('2020-10-03 19:00:00'),
+      rental_start: from - 3.days,
+      rental_end: till - 4.days,
       item: item_1_3
     )
 
+    # 2 bookings inside given interval, for second_product
     create(
       :booking,
       user: user,
-      rental_start: DateTime.parse('2020-10-03 09:00:00'),
-      rental_end: DateTime.parse('2020-10-06 19:00:00'),
+      rental_start: from - 2.days,
+      rental_end: till - 1.day,
       item: item_2_1
     )
 
     create(
       :booking,
       user: user,
-      rental_start: DateTime.parse('2020-10-07 08:00:00'),
-      rental_end: DateTime.parse('2020-10-15 19:00:00'),
+      rental_start: from - 6.days,
+      rental_end: till + 8.days,
       item: item_2_2
     )
 
@@ -73,7 +76,37 @@ describe 'get available products count', type: :request do
     expect(response).to have_http_status(:success)
   end
 
-  it 'returns all available products' do
+  it 'returns data about available products' do
     expect(JSON.parse(response.body)).to eq(result)
+  end
+
+  context 'when input is invalid' do
+    context 'when input parameters is a string not representating date' do
+      before do
+        get "/available_items/some_string/#{till}"
+      end
+
+      it 'returns status code 400' do
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it 'returns error' do
+        expect(JSON.parse(response.body)).to include('errors')
+      end
+    end
+
+    context 'when till is earlier than from' do
+      before do
+        get "/available_items/#{till}/#{from}"
+      end
+
+      it 'returns status code 400' do
+        expect(response).to have_http_status(:bad_request)
+      end
+
+      it 'returns error' do
+        expect(JSON.parse(response.body)).to include('errors')
+      end
+    end
   end
 end
