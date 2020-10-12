@@ -6,15 +6,17 @@ class Product < ApplicationRecord
   def available(params)
     from = DateTime.parse(params[:from])
     till = DateTime.parse(params[:till])
-
     quantity - reserved_items_count(from, till)
   end
 
   def reserved_items_count(from, till)
-    items.each.with_object([]) do |item, ary|
-      item.bookings.each do |booking|
-        ary << item.id if (booking.rental_start <= till) && (from <= booking.rental_end)
-      end
-    end.uniq.size
+    sql = <<-SQL
+    SELECT COUNT(DISTINCT items.id) FROM items
+    INNER JOIN products on products.id = items.product_id
+    INNER JOIN bookings ON items.id = bookings.item_id
+    WHERE products.id = '#{id}' AND bookings.rental_start <= '#{till}' AND '#{from}' <= bookings.rental_end
+    SQL
+
+    ActiveRecord::Base.connection.select_value(sql).to_i
   end
 end
